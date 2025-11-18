@@ -25,7 +25,7 @@ pub fn divide_by_height<F: Field, S: DenseStorage<F> + BorrowMut<[F]>>(
 }
 
 /// Multiply each element of row `i` of `mat` by `shift**i`.
-pub(crate) fn coset_shift_cols<F: Field>(mat: &mut RowMajorMatrix<F>, shift: F) {
+pub(crate) fn coset_shift_rows<F: Field>(mat: &mut RowMajorMatrix<F>, shift: F) {
     mat.rows_mut()
         .zip(shift.powers())
         .for_each(|(row, weight)| {
@@ -100,7 +100,7 @@ mod tests {
     }
 
     #[test]
-    fn test_coset_shift_cols_3x2_shift_2() {
+    fn test_coset_shift_rows_3x2_shift_2() {
         // Input matrix:
         // [ 1, 2 ]
         // [ 3, 4 ]
@@ -123,7 +123,7 @@ mod tests {
             2,
         );
 
-        coset_shift_cols(&mut mat, F::from_u8(2));
+        coset_shift_rows(&mut mat, F::from_u8(2));
 
         let expected = vec![
             F::from_u8(1),
@@ -138,14 +138,14 @@ mod tests {
     }
 
     #[test]
-    fn test_coset_shift_cols_identity_shift() {
+    fn test_coset_shift_rows_identity_shift() {
         // shift = 1 → all weights = 1 → matrix should remain unchanged
         let mut mat = RowMajorMatrix::new(
             vec![F::from_u8(7), F::from_u8(8), F::from_u8(9), F::from_u8(10)],
             2,
         );
 
-        coset_shift_cols(&mut mat, F::from_u8(1));
+        coset_shift_rows(&mut mat, F::from_u8(1));
 
         let expected = vec![F::from_u8(7), F::from_u8(8), F::from_u8(9), F::from_u8(10)];
 
