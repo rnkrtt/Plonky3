@@ -6,7 +6,7 @@ use p3_matrix::bitrev::BitReversibleMatrix;
 use p3_matrix::dense::RowMajorMatrix;
 use p3_matrix::util::swap_rows;
 
-use crate::util::{coset_shift_cols, divide_by_height};
+use crate::util::{coset_shift_rows, divide_by_height};
 
 /// This trait gives an interface for computing discrete fourier transforms (DFT's) and their inverses over
 /// cosets of two-adic subgroups of a field `F`. It also contains combined methods which allow you to take the
@@ -86,7 +86,7 @@ pub trait TwoAdicSubgroupDft<F: TwoAdicField>: Clone + Default {
         //         = \sum_j (c_j s^j) (g^i)^j
         // which has the structure of an ordinary DFT, except each coefficient `c_j` is first replaced
         // by `c_j s^j`.
-        coset_shift_cols(&mut mat, shift);
+        coset_shift_rows(&mut mat, shift);
         self.dft_batch(mat)
     }
 
@@ -148,7 +148,7 @@ pub trait TwoAdicSubgroupDft<F: TwoAdicField>: Clone + Default {
         // The output of the iDFT is the coefficients of `g` so to get the coefficients of
         // `f` we need to scale the `i`'th coefficient by `s^{-i}`.
         mat = self.idft_batch(mat);
-        coset_shift_cols(&mut mat, shift.inverse());
+        coset_shift_rows(&mut mat, shift.inverse());
         mat
     }
 
